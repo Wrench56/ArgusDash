@@ -6,3 +6,6 @@ __pycache__
 
 # Ignore backend logs
 src/backend/logs
+
+# Ignore built frontend
+public
