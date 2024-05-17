@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
  
 app = FastAPI()
+app.mount('/assets', StaticFiles(directory='../public/assets'), name='static')
 
-@app.get("/", response_class=FileResponse)
+@app.get('/', response_class=FileResponse)
 async def home():
-    return "../frontend/index.html"
+    return '../public/index.html'
