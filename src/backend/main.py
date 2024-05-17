@@ -7,9 +7,11 @@ import sys
 import subprocess
 
 from server import start_server
+from server import build
 
 def main() -> None:
     init_logger()
+    build.build_frontend()
     proc = start_server.init()
     
     # Register cleanup function
