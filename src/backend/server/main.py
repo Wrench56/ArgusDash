@@ -7,4 +7,4 @@ app.mount('/assets', StaticFiles(directory='../public/assets'), name='static')
 
 @app.get('/', response_class=FileResponse)
 async def home():
-    return '../public/index.html'
+    return '../public/login.html'
