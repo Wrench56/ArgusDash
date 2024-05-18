@@ -18,7 +18,7 @@ def _start_frontend_build(config: ConfigParser) -> subprocess.Popen:
     return processes.add_subprocess(subprocess.Popen(
         config['frontend']['build'].split(' '),
         cwd=config['frontend'].get('path'),
-        stdout=None if config['frontend'].get('show_output') else subprocess.DEVNULL,
+        stdout=None if config['frontend'].get('show_output').lower() == 'true' else subprocess.DEVNULL,
         shell=True
     ))
 
