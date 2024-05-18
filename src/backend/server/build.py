@@ -4,6 +4,7 @@ from configparser import ConfigParser
 from typing import List
 
 import processes
+from utils import perf
 
 
 def _load_config() -> List[str]:
@@ -23,10 +24,12 @@ def _start_frontend_build(config: ConfigParser) -> subprocess.Popen:
 
 
 def build_frontend() -> bool:
+    start = perf.current_time_ms()
+
     logging.info('Loading config.ini')
     config = _load_config()
     logging.info('Starting frontend build')
     proc = _start_frontend_build(config)
     proc.wait()
-    logging.info('Frontend build done')
-    
+
+    logging.info(f"Frontend built in {perf.current_time_ms() - start}ms")
