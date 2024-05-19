@@ -4,34 +4,32 @@ import logging.config
 import atexit
 import signal
 import sys
-import subprocess
 
-from server import start_server
-from server import build
+from utils import processes
+
+from server import build, start
 
 def main() -> None:
     init_logger()
-    build.build_frontend()
-    proc = start_server.init()
-    
-    # Register cleanup function
-    atexit.register(lambda: cleanup(proc))
-    signal.signal(signal.SIGTERM, lambda: cleanup(proc))
-    signal.signal(signal.SIGINT, lambda: cleanup(proc))
 
-    # Block
-    proc.wait()
+    # Register cleanup functions
+    atexit.register(cleanup)
+    signal.signal(signal.SIGTERM, cleanup)
+    signal.signal(signal.SIGINT, cleanup)
+
+    # Build the frontend with Vite
+    build.build_frontend()
+
+    # Start the ASGI uvicorn server
+    start.run()
 
 def init_logger():
     logging.config.fileConfig('config/logger.config.ini')
     logging.info('Logging init done')
 
-def cleanup(process: subprocess.Popen) -> None:
-    logging.info('Cleanup function called')
-    process.terminate()
-    process.wait()
-    logging.info('Cleanup successful')
-    
+def cleanup() -> None:
+    processes.terminate_subprocesses()
+
     # Raises SystemExit
     sys.exit()
 
