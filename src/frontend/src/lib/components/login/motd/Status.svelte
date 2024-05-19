@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import version from "$lib/version";
 
   let status = {
     ncu: "wait",
     npm_doct: "wait",
+    version: "wait",
   };
 
   onMount(() => {
@@ -13,14 +15,27 @@
         for (let entry in status) {
           status[entry] = responseJson[entry] ?? "hide";
         }
+      })
+      .then(() => {
+        
+        if (status.version != "hide") {
+          fetch(`${window.location.origin}/version`)
+            .then((response) => response.text())
+            .then(
+              (text) => status.version = (text == version) ? " ok " : "fail"
+            );
+        }
       });
   });
 </script>
 
-<pre>[ <span class={status.npm_doct.trim()}>{status.npm_doct.toUpperCase()}</span
+<pre>[ <span class={status.npm_doct.trim()}
+    >{status.npm_doct.toUpperCase()}</span
   > ]    NPM Health</pre>
 <pre>[ <span class={status.ncu.trim()}>{status.ncu.toUpperCase()}</span
   > ]    NPM Packages up-to-date</pre>
+<pre>[ <span class={status.version.trim()}>{status.version.toUpperCase()}</span
+  > ]    Version equals backend version</pre>
 
 <style>
   pre {
