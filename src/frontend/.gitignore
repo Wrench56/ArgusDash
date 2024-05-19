@@ -25,3 +25,6 @@ dist-ssr
 
 # Ignore .svelte-kit
 .svelte-kit
+
+# Ignore Vite cache
+vite.config.ts.timestamp-*
