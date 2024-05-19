@@ -1,7 +1,62 @@
-_status_ok = {
-    ''
-}
+import subprocess
+import sys
 
-def update_status() {
-    
-}
+from typing import Dict, Optional
+from utils import config, processes
+
+_status_ok: Dict[str, str] = {}
+
+
+def get() -> Dict[str, str]:
+    return _status_ok
+
+
+def update() -> None:
+    cwd = config.get('frontend').get('path')
+    stdout = None if config.get('status').get('show_output').lower() == 'true' else subprocess.DEVNULL
+
+    _status_ok['npm_doct'] = _run_npm_doctor(cwd, stdout)
+    _status_ok['ncu'] = _run_ncu(cwd, stdout)
+
+
+def _run_npm_doctor(cwd: str, stdout: Optional[int]) -> str:
+    proc = processes.add_subprocess(
+        subprocess.Popen(
+            (
+                'npm',
+                'doctor',
+            ),
+            cwd=cwd,
+            stdout=stdout,
+            stderr=stdout,
+            shell=True,
+        )
+    )
+    proc.wait(timeout=5)
+    processes.remove_subprocess(proc)
+
+    return ' ok ' if proc.returncode == 0 else 'fail'
+
+
+def _run_ncu(cwd: str, stdout: Optional[int]) -> str:
+    proc = processes.add_subprocess(
+        subprocess.Popen(
+            (
+                'npm',
+                'exec',
+                'npm-check-updates',
+            ),
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=stdout,
+            shell=True,
+        )
+    )
+    proc.wait(timeout=5)
+    stdout_string = proc.stdout.read().decode()
+    if stdout is not subprocess.DEVNULL:
+        sys.stdout.write(stdout_string)
+    processes.remove_subprocess(proc)
+    if 'All dependencies match the latest' in stdout_string:
+        return ' ok '
+    return 'fail'
