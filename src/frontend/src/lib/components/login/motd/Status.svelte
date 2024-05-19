@@ -11,7 +11,7 @@
       .then((response) => response.json())
       .then((responseJson) => {
         for (let entry in status) {
-          status[entry] = responseJson[entry] ?? "stop";
+          status[entry] = responseJson[entry] ?? "hide";
         }
       });
   });
@@ -50,7 +50,7 @@
     color: rgb(255, 234, 0);
   }
 
-  .stop {
+  .hide {
     color: dimgray;
   }
 </style>
