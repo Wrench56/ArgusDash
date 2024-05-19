@@ -4,11 +4,11 @@ import sys
 from typing import Dict, Optional
 from utils import config, processes
 
-_status_ok: Dict[str, str] = {}
+_status: Dict[str, str] = {}
 
 
 def get() -> Dict[str, str]:
-    return _status_ok
+    return _status
 
 
 def update() -> None:
@@ -17,9 +17,11 @@ def update() -> None:
     disabled = tuple(map(str.strip, config.get('status').get('disable_statuses').split(',')))
 
     if 'npm_doct' not in disabled:
-        _status_ok['npm_doct'] = _run_npm_doctor(cwd, stdout)
+        _status['npm_doct'] = _run_npm_doctor(cwd, stdout)
     if 'ncu' not in disabled:
-        _status_ok['ncu'] = _run_ncu(cwd, stdout)
+        _status['ncu'] = _run_ncu(cwd, stdout)
+    if 'version' not in disabled:
+        _status['version'] = 'wait'
 
 
 def _run_npm_doctor(cwd: str, stdout: Optional[int]) -> str:
