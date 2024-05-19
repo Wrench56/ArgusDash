@@ -20,6 +20,7 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "@sveltejs/adapter-static": "^3.0.1"
+    "@sveltejs/adapter-static": "^3.0.1",
+    "npm-check-updates": "^16.14.20"
   }
 }
