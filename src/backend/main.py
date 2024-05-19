@@ -5,12 +5,16 @@ import atexit
 import signal
 import sys
 
-from utils import processes
+from utils import processes, config
 
 from server import build, start
 
 def main() -> None:
+    # Initialize logging
     init_logger()
+    
+    # Load config.ini
+    config.load()
 
     # Register cleanup functions
     atexit.register(cleanup)

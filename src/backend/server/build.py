@@ -1,28 +1,20 @@
 import logging
 import subprocess
-from configparser import ConfigParser
-from typing import List
 
-from utils import perf
+from utils import perf, config
 
 import utils.processes as processes
 
 
-def _load_config() -> List[str]:
-    config = ConfigParser()
-    config.read('config/config.ini')
-
-    return config
-
-
-def _start_frontend_build(config: ConfigParser) -> subprocess.Popen:
+def _start_frontend_build() -> subprocess.Popen:
+    conf = config.get('frontend')
     return processes.add_subprocess(
         subprocess.Popen(
-            config['frontend']['build'].split(' '),
-            cwd=config['frontend'].get('path'),
+            conf.get('build').split(' '),
+            cwd=conf.get('path'),
             stdout=(
                 None
-                if config['frontend'].get('show_output').lower() == 'true'
+                if conf.get('show_output').lower() == 'true'
                 else subprocess.DEVNULL
             ),
             shell=True
@@ -33,10 +25,8 @@ def _start_frontend_build(config: ConfigParser) -> subprocess.Popen:
 def build_frontend() -> bool:
     start = perf.current_time_ms()
 
-    logging.info('Loading config.ini')
-    config = _load_config()
     logging.info('Starting frontend build')
-    proc = _start_frontend_build(config)
+    proc = _start_frontend_build()
     proc.wait()
 
     logging.info(f'Frontend built in {perf.current_time_ms() - start}ms')
