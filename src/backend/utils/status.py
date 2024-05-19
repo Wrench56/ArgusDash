@@ -14,9 +14,12 @@ def get() -> Dict[str, str]:
 def update() -> None:
     cwd = config.get('frontend').get('path')
     stdout = None if config.get('status').get('show_output').lower() == 'true' else subprocess.DEVNULL
+    disabled = tuple(map(str.strip, config.get('status').get('disable_statuses').split(',')))
 
-    _status_ok['npm_doct'] = _run_npm_doctor(cwd, stdout)
-    _status_ok['ncu'] = _run_ncu(cwd, stdout)
+    if 'npm_doct' not in disabled:
+        _status_ok['npm_doct'] = _run_npm_doctor(cwd, stdout)
+    if 'ncu' not in disabled:
+        _status_ok['ncu'] = _run_ncu(cwd, stdout)
 
 
 def _run_npm_doctor(cwd: str, stdout: Optional[int]) -> str:
@@ -32,7 +35,7 @@ def _run_npm_doctor(cwd: str, stdout: Optional[int]) -> str:
             shell=True,
         )
     )
-    proc.wait(timeout=5)
+    proc.wait(timeout=15)
     processes.remove_subprocess(proc)
 
     return ' ok ' if proc.returncode == 0 else 'fail'
@@ -52,7 +55,7 @@ def _run_ncu(cwd: str, stdout: Optional[int]) -> str:
             shell=True,
         )
     )
-    proc.wait(timeout=5)
+    proc.wait(timeout=15)
     stdout_string = proc.stdout.read().decode()
     if stdout is not subprocess.DEVNULL:
         sys.stdout.write(stdout_string)
