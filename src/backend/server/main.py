@@ -16,6 +16,8 @@ async def favicon() -> FileResponse:
 
 @app.get('/version', response_class=PlainTextResponse)
 async def version() -> PlainTextResponse:
+    if status.get().get('version') is None:
+        return PlainTextResponse('')
     return PlainTextResponse(const.VERSION)
 
 
