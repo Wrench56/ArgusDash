@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+		"berublan.vscode-log-viewer"
+	],
+    "logViewer.watch": [
+        {
+            "title": "System Logs",
+            "pattern": "src/backend/logs/system.log"
+        }
+    ]
+}
