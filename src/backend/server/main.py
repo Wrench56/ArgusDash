@@ -8,7 +8,7 @@ app = FastAPI()
 app.mount('/assets', StaticFiles(directory='../public/assets'), name='static')
 
 
-@app.get('/favicon', include_in_schema=False)
+@app.get('/favicon.png', include_in_schema=False)
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon() -> FileResponse:
     return FileResponse('../public/favicon.png')
