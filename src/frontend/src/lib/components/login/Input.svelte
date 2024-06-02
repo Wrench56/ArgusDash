@@ -21,7 +21,34 @@
     }
   }
 
-  function authenticate() {}
+  async function authenticate() {
+    sha256(password).then(password_sha => {
+      fetch(`${window.location.origin}/auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password_sha
+        })
+      }).then((response) => {
+        /* TODO: Notify user if there is a problem */
+        if (response.ok) {
+          window.location.replace(`${window.location.origin}/dashboard`);
+        }
+      });
+    });
+  }
+
+  /* Source: https://stackoverflow.com/questions/18338890/ */
+  async function sha256(data: string) {
+    const msgBuffer = new TextEncoder().encode(data);                    
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));                 
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
 </script>
 
 <svelte:window
