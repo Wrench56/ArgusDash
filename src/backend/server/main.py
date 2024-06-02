@@ -1,8 +1,14 @@
-from fastapi import FastAPI
+import datetime
+import logging
+
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
-from utils import const, status
+from db import users
+from utils import config, const, status
+
+database = users.Database()
 
 app = FastAPI()
 app.mount('/assets', StaticFiles(directory='../public/assets'), name='static')
@@ -23,10 +29,33 @@ async def version() -> PlainTextResponse:
 
 # Login
 @app.get('/', response_class=FileResponse)
-async def home():
-    return '../public/login.html'
+async def login_page() -> FileResponse:
+    return FileResponse('../public/login.html')
 
 
 @app.get('/login/status', response_class=ORJSONResponse)
 async def login_info() -> ORJSONResponse:
     return ORJSONResponse(status.get())
+
+@app.post('/auth', response_class=PlainTextResponse)
+async def login(request: Request) -> PlainTextResponse:
+    data = await request.json()
+    response = PlainTextResponse()
+    username = data.get('username')
+
+    if not database.is_valid(username, data.get('password')):
+        return response
+
+    uuid = database.create_uuid(username)
+    logging.info(f'Welcome user "{username}"!')
+    expire_time = float(config.get('security').get('auth_cookie_expire_time') or 3600.0)
+    response.set_cookie(key='auth_cookie', value=uuid, expires=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=expire_time))
+    return response
+
+
+# Dashboard
+@app.get('/dashboard', response_class=ORJSONResponse)
+async def dashboard_page(request: Request) -> FileResponse:
+    if database.uuid_exists(request.cookies.get('auth_cookie')):
+        return FileResponse('../public/dashboard.html')
+    return FileResponse('../public/blocked.html')
