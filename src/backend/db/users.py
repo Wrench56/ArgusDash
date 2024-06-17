@@ -68,3 +68,6 @@ class Database:
         uuid_ = user.generate_uuid()
         self._valid_uuids[uuid_] = user
         return uuid_
+
+    def active_users(self) -> int:
+        return len(self._valid_uuids)
