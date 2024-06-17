@@ -55,7 +55,12 @@ async def login(request: Request) -> PlainTextResponse:
     uuid = database.create_uuid(username)
     logging.info(f'Welcome user "{username}"!')
     expire_time = float(config.get('security').get('auth_cookie_expire_time') or 3600.0)
-    response.set_cookie(key='auth_cookie', value=uuid, expires=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=expire_time))
+    response.set_cookie(
+        key='auth_cookie',
+        value=uuid,
+        expires=datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(seconds=expire_time),
+    )
     return response
 
 

@@ -5,6 +5,7 @@ import logging
 from utils import config
 import uuid
 
+
 class User:
     def __init__(self, username: str, password: str) -> None:
         self._username: str = username
@@ -18,8 +19,12 @@ class User:
         return self._uuid
 
     def _generate_expire_time(self):
-        expire_time = float(config.get('security').get('auth_cookie_expire_time') or 3600.0)
-        self._expire_time = datetime.datetime.now() + datetime.timedelta(seconds=expire_time)
+        expire_time = float(
+            config.get('security').get('auth_cookie_expire_time') or 3600.0
+        )
+        self._expire_time = datetime.datetime.now() + datetime.timedelta(
+            seconds=expire_time
+        )
 
     def uuid_has_expired(self) -> bool:
         if self._expire_time is None:
@@ -36,7 +41,9 @@ class User:
 # Temporary solution
 class Database:
     VALID_AUTHS: Dict[str, User] = {
-        'admin': User('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918')
+        'admin': User(
+            'admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'
+        )
     }
 
     def __init__(self) -> None:
