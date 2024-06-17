@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 from db import users
-from utils import config, const, status
+from utils import config, const, motd, status
 
 database = users.Database()
 
@@ -36,6 +36,12 @@ async def login_page() -> FileResponse:
 @app.get('/login/status', response_class=ORJSONResponse)
 async def login_info() -> ORJSONResponse:
     return ORJSONResponse(status.get())
+
+
+@app.get('/login/motd', response_class=PlainTextResponse)
+async def motd_text() -> PlainTextResponse:
+    return PlainTextResponse(motd.format_(config.get('frontend').get('motd'), database))
+
 
 @app.post('/auth', response_class=PlainTextResponse)
 async def login(request: Request) -> PlainTextResponse:
