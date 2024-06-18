@@ -5,6 +5,7 @@
   let status = {
     ncu: "wait",
     npm_doct: "wait",
+    npm_audit: "wait",
     version: "wait",
   };
 
@@ -34,6 +35,8 @@
   > ]    NPM Health</pre>
 <pre>[ <span class={status.ncu.trim()}>{status.ncu.toUpperCase()}</span
   > ]    NPM Packages up-to-date</pre>
+<pre>[ <span class={status.npm_audit.trim()}>{status.npm_audit.toUpperCase()}</span
+  > ]    NPM Packages are not vulnerable</pre>
 <pre>[ <span class={status.version.trim()}>{status.version.toUpperCase()}</span
   > ]    Version equals backend version</pre>
 
