@@ -72,10 +72,6 @@ class Database:
         if user is None:
             logging.error(f'"{username}" is not a valid username')
             return 'INVALID'
-        print(user)
-        print(user._uuid)
-        print(user.has_uuid())
-        print(user.get_uuid())
         if user.has_uuid():
             logging.info(f'User "{username}" already has a UUID')
             prev_uuid = user.get_uuid()
