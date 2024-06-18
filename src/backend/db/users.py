@@ -32,7 +32,10 @@ class User:
         return datetime.datetime.now() > self._expire_time
 
     def has_uuid(self) -> bool:
-        return self._uuid is None
+        return self._uuid is not None
+
+    def get_uuid(self) -> Optional[str]:
+        return self._uuid
 
     def valid_password(self, password: str) -> bool:
         return self._password_hash == password
@@ -69,9 +72,15 @@ class Database:
         if user is None:
             logging.error(f'"{username}" is not a valid username')
             return 'INVALID'
+        print(user)
+        print(user._uuid)
+        print(user.has_uuid())
+        print(user.get_uuid())
         if user.has_uuid():
-            logging.error(f'User "{username}" already has a UUID')
-
+            logging.info(f'User "{username}" already has a UUID')
+            prev_uuid = user.get_uuid()
+            if prev_uuid:
+                del self._valid_uuids[prev_uuid]
         uuid_ = user.generate_uuid()
         self._valid_uuids[uuid_] = user
         return uuid_
