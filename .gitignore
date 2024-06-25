@@ -7,5 +7,11 @@ __pycache__
 # Ignore backend logs
 src/backend/logs
 
+# Ignore backend plugin downloads
+src/backend/plugins/downloads
+
+# Ignore backend plugins
+src/backend/plugins/plugins
+
 # Ignore built frontend
 public
