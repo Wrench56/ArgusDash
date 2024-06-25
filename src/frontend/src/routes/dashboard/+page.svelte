@@ -1,17 +1,10 @@
-<h1>Hello World!</h1>
-<p>This page is protected by server-side authentication.</p>
+<script lang="ts">
+    import Statusbar from "$lib/components/dashboard/Statusbar.svelte";
+</script>
+
+<Statusbar />
 
 <style>
-    h1 {
-        color: whitesmoke;
-        font-family: monaco, Consolas, "Lucida Console", monospace;
-    }
-
-    p {
-        color: whitesmoke;
-        font-family: monaco, Consolas, "Lucida Console", monospace;
-    }
-
     :root {
         background-color: black;
     }
