@@ -27,15 +27,17 @@ async def version() -> PlainTextResponse:
     return PlainTextResponse(const.VERSION)
 
 
+@app.get('/status', response_class=ORJSONResponse)
+async def login_status(request: Request) -> ORJSONResponse:
+    if database.uuid_exists(request.cookies.get('auth_cookie')):
+        return ORJSONResponse(status.get())
+    return ORJSONResponse(status.filter_login_disabled(status.get()))
+
+
 # Login
 @app.get('/', response_class=FileResponse)
 async def login_page() -> FileResponse:
     return FileResponse('../public/login.html')
-
-
-@app.get('/login/status', response_class=ORJSONResponse)
-async def login_info() -> ORJSONResponse:
-    return ORJSONResponse(status.get())
 
 
 @app.get('/login/motd', response_class=PlainTextResponse)
@@ -65,7 +67,7 @@ async def login(request: Request) -> PlainTextResponse:
 
 
 # Dashboard
-@app.get('/dashboard', response_class=ORJSONResponse)
+@app.get('/dashboard', response_class=FileResponse)
 async def dashboard_page(request: Request) -> FileResponse:
     if database.uuid_exists(request.cookies.get('auth_cookie')):
         return FileResponse('../public/dashboard.html')

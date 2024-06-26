@@ -10,7 +10,7 @@
   };
 
   onMount(() => {
-    fetch(`${window.location.origin}/login/status`)
+    fetch(`${window.location.origin}/status`)
       .then((response) => response.json())
       .then((responseJson) => {
         for (let entry in status) {
