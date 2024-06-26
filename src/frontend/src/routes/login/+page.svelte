@@ -14,7 +14,7 @@
 <Input />
 
 <style>
-    :root {
-        background-color: black;
-    }
+  :root {
+    background-color: black;
+  }
 </style>
