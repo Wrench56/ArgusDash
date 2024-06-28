@@ -34,6 +34,11 @@ async def login_status(request: Request) -> ORJSONResponse:
     return ORJSONResponse(status.filter_login_disabled(status.get()))
 
 
+@app.get('/ping', response_class=PlainTextResponse)
+async def ping() -> PlainTextResponse:
+    return PlainTextResponse("PONG")
+
+
 # Login
 @app.get('/', response_class=FileResponse)
 async def login_page() -> FileResponse:
