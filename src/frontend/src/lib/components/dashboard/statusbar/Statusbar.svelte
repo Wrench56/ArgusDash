@@ -29,7 +29,7 @@
     text-align: center;
     display: inline-grid;
     column-gap: 2px;
-    grid-template-columns: 160px 40px auto;
+    grid-template-columns: 160px 40px auto 100px;
   }
 
   pre {
