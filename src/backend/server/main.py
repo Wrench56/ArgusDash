@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 from db import users
-from utils import config, const, motd, status
+from utils import config, const, motd, settings, status
 
 database = users.Database()
 
@@ -72,3 +72,31 @@ async def dashboard_page(request: Request) -> FileResponse:
     if database.uuid_exists(request.cookies.get('auth_cookie')):
         return FileResponse('../public/dashboard.html')
     return FileResponse('../public/blocked.html')
+
+
+# Settings
+@app.get('/settings', response_class=FileResponse)
+async def settings_page(request: Request) -> FileResponse:
+    if database.uuid_exists(request.cookies.get('auth_cookie')):
+        return FileResponse('../public/settings.html')
+    return FileResponse('../public/blocked.html')
+
+
+@app.get('/settings/all', response_class=PlainTextResponse)
+async def all_settings(request: Request) -> PlainTextResponse:
+    if database.uuid_exists(request.cookies.get('auth_cookie')):
+        return PlainTextResponse(','.join(settings.get_all()))
+    return PlainTextResponse(','.join(settings.get_default()))
+
+
+@app.post('/settings/{id_}', response_class=PlainTextResponse)
+async def update_setting(request: Request, id_: int) -> PlainTextResponse:
+    response = PlainTextResponse()
+    if not database.uuid_exists(request.cookies.get('auth_cookie')):
+        response.status_code = 401
+        return response
+
+    data = await request.body()
+    settings.update_setting(id_, data.decode())
+
+    return response
