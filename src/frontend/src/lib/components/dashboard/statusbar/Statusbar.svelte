@@ -1,13 +1,15 @@
 <script lang="ts">
   import version from "$lib/version";
   import Clock from "./Clock.svelte";
+  import Latency from "./Latency.svelte";
 </script>
 
 <div class="container">
   <a href="/settings">
     <pre class="version"> ArgusDash - v{version}</pre>
   </a>
-  <Clock></Clock>
+  <Latency />
+  <Clock />
 </div>
 
 <style>
@@ -27,7 +29,7 @@
     text-align: center;
     display: inline-grid;
     column-gap: 2px;
-    grid-template-columns: 180px auto;
+    grid-template-columns: 160px 40px auto;
   }
 
   pre {
