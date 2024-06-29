@@ -24,7 +24,6 @@
   });
 
   function handleKeydown(event: KeyboardEvent) {
-    /* Ignore scroll */
     if (event.key === "ArrowUp" && index > 0) {
       event.preventDefault();
       settings_list[index].setCursor(false);
