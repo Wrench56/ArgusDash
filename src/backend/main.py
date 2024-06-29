@@ -20,9 +20,9 @@ def main() -> None:
     status.update()
 
     # Register cleanup functions
-    atexit.register(cleanup)
-    signal.signal(signal.SIGTERM, cleanup)
-    signal.signal(signal.SIGINT, cleanup)
+    atexit.register(lambda: cleanup)
+    signal.signal(signal.SIGTERM, lambda _, __: cleanup())
+    signal.signal(signal.SIGINT, lambda _, __: cleanup())
 
     # Build the frontend with Vite
     build.build_frontend()
