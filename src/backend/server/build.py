@@ -20,7 +20,7 @@ def _start_frontend_build() -> subprocess.Popen:
     )
 
 
-def build_frontend() -> bool:
+def build_frontend() -> int:
     start = perf.current_time_ms()
 
     logging.info('Starting frontend build')
@@ -28,4 +28,7 @@ def build_frontend() -> bool:
     proc.wait()
     processes.remove_subprocess(proc)
 
-    logging.info(f'Frontend built in {perf.current_time_ms() - start}ms')
+    build_time = perf.current_time_ms() - start
+    logging.info(f'Frontend built in {build_time}ms')
+
+    return build_time

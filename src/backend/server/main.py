@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 from db import users
+from server import build
 from utils import config, const, motd, settings, status
 
 database = users.Database()
@@ -37,6 +38,17 @@ async def login_status(request: Request) -> ORJSONResponse:
 @app.get('/ping', response_class=PlainTextResponse)
 async def ping() -> PlainTextResponse:
     return PlainTextResponse("PONG")
+
+
+@app.post('/rebuild', response_class=PlainTextResponse)
+async def login(request: Request) -> PlainTextResponse:
+    if not database.uuid_exists(request.cookies.get('auth_cookie')):
+        return PlainTextResponse('ERROR: AUTH')
+
+    build_time = build.build_frontend()
+    if build_time < 0:
+        return PlainTextResponse('ERROR: BUILD')
+    return PlainTextResponse(f'REBUILT: Rebuilt in {build_time}ms')
 
 
 # Login
