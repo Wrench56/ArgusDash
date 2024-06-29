@@ -34,7 +34,7 @@
             setTimeout(() => {
               status = ostatus;
               lock = false;
-            }, 2500);
+            }, 5000);
             status = "F";
           }
         });
