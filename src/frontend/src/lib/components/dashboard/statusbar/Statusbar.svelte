@@ -1,14 +1,14 @@
 <script lang="ts">
-  import version from "$lib/version";
+  import Version from "$lib/components/dashboard/statusbar/BuildVersion.svelte";
   import Clock from "./Clock.svelte";
   import Latency from "./Latency.svelte";
+  import Rebuild from "./Rebuild.svelte";
 </script>
 
 <div class="container">
-  <a href="/settings">
-    <pre class="version"> ArgusDash - v{version}</pre>
-  </a>
+  <Version />
   <Latency />
+  <Rebuild />
   <Clock />
 </div>
 
@@ -29,25 +29,6 @@
     text-align: center;
     display: inline-grid;
     column-gap: 2px;
-    grid-template-columns: 160px 40px auto 100px;
-  }
-
-  pre {
-    color: whitesmoke;
-    font-family: monaco, Consolas, "Lucida Console", monospace;
-    font-size: 12px;
-    margin: 0px;
-    position: absolute;
-    top: 50%;
-    transform: translate(0%, -50%);
-  }
-
-  .version {
-    grid-column: 1;
-    padding: 4px;
-  }
-
-  .version:hover {
-    background-color: rgb(102, 153, 255);
+    grid-template-columns: 160px 60px 60px auto 100px;
   }
 </style>
