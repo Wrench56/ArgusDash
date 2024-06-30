@@ -3,12 +3,14 @@
   import Clock from "./Clock.svelte";
   import Latency from "./Latency.svelte";
   import Rebuild from "./Rebuild.svelte";
+  import Fullscreen from "./Fullscreen.svelte";
 </script>
 
 <div class="container">
   <Version />
-  <Latency />
   <Rebuild />
+  <Fullscreen />
+  <Latency />
   <Clock />
 </div>
 
@@ -29,6 +31,6 @@
     text-align: center;
     display: inline-grid;
     column-gap: 2px;
-    grid-template-columns: 160px 60px 60px auto 100px;
+    grid-template-columns: 160px 60px 80px 60px auto 100px;
   }
 </style>
