@@ -1,21 +1,10 @@
 <script lang="ts">
-  function rebuild() {
-    fetch("/rebuild", { method: "POST" }).then((response) => {
-      if (response.ok) {
-        response.text().then((text) => {
-          if (text.startsWith("REBUILT")) {
-            localStorage.setItem("rebuild", text.substring(8));
-            location.reload();
-          }
-        });
-      }
-    });
-  }
+  import { toggleFullscreen } from "$lib/components/fullscreen";
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:click={() => rebuild()}>Rebuild</div>
+<div on:click={() => toggleFullscreen()}>Fullscreen</div>
 
 <style>
   div {
@@ -27,7 +16,7 @@
     font-size: 12px;
     margin: 0px;
     display: grid;
-    grid-column: 2;
+    grid-column: 3;
   }
 
   div:hover {
