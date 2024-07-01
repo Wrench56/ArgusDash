@@ -1,10 +1,27 @@
 <script lang="ts">
+  import { NotificationPriority, notify } from "$lib/notifications/notify";
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    if (localStorage.getItem("rebuild") != null) {
+      notify({
+        title: "Site rebuilt",
+        priority: NotificationPriority.System,
+        duration: 2000,
+        options: {
+          body: localStorage.getItem("rebuild"),
+        },
+        notifyDesktop: false,
+      });
+    }
+  });
+
   function rebuild() {
     fetch("/rebuild", { method: "POST" }).then((response) => {
       if (response.ok) {
         response.text().then((text) => {
           if (text.startsWith("REBUILT")) {
-            localStorage.setItem("rebuild", text.substring(8));
+            localStorage.setItem("rebuild", text.substring(9));
             location.reload();
           }
         });
