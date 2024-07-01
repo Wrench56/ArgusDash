@@ -9,6 +9,7 @@
   import SettingsHeader from "$lib/components/settings/Header.svelte";
   import Separator from "$lib/components/settings/Separator.svelte";
   import SettingsContainer from "$lib/components/settings/SettingsContainer.svelte";
+  import DNotificationContainer from "$lib/notifications/DNotificationContainer.svelte";
 </script>
 
 <div class="status">
@@ -24,6 +25,7 @@
   <SettingsContainer />
 </Box>
 <Statusbar />
+<DNotificationContainer />
 
 <style>
   :root {
