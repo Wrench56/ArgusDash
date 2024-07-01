@@ -110,7 +110,7 @@ async def all_settings(request: Request) -> PlainTextResponse:
 
 
 @app.post('/settings/{id_}', response_class=PlainTextResponse)
-async def update_setting(request: Request, id_: int) -> PlainTextResponse:
+async def update_setting(request: Request, id_: str) -> PlainTextResponse:
     response = PlainTextResponse()
     if not database.uuid_exists(request.cookies.get('auth_cookie')):
         response.status_code = 401
