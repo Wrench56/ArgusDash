@@ -1,6 +1,9 @@
+from typing import Tuple
+
 import logging
 import subprocess
 
+from pathlib import Path
 from utils import config, perf, processes
 
 
@@ -32,3 +35,20 @@ def build_frontend() -> int:
     logging.info(f'Frontend built in {build_time}ms')
 
     return build_time
+
+
+def get_frontend_size() -> Tuple[float, str]:
+    root_directory = Path(config.get('frontend').get('build_path'))
+    return _format_units(
+        sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+    )
+
+
+def _format_units(num_bytes: int) -> Tuple[float, str]:
+    if num_bytes > 1024*1024*1024:
+        return round(num_bytes / (1024*1024*1024), 2), 'GB'
+    if num_bytes > 1024*1024:
+        return round(num_bytes / (1024*1024), 2), 'MB'
+    if num_bytes > 1024:
+        return round(num_bytes / 1024, 2), "KB"
+    return num_bytes, "B"
