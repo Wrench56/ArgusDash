@@ -42,6 +42,7 @@
     height: 135px;
     text-align: center;
     overflow: scroll;
+    background-color: transparent;
   }
 
   .container::-webkit-scrollbar {
