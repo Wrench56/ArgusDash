@@ -43,10 +43,10 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="container">
-  <Setting id="0" bind:api={settings_list[0]}>
+  <Setting id="BUILD_MODE" bind:api={settings_list[0]}>
     <pre>Build mode</pre>
   </Setting>
-  <Setting id="1" bind:api={settings_list[1]}>
+  <Setting id="STATUS_IN_SETTINGS" bind:api={settings_list[1]}>
     <pre>General status on settings page</pre>
   </Setting>
 </div>
