@@ -12,12 +12,14 @@
   import DNotificationContainer from "$lib/notifications/DNotificationContainer.svelte";
 </script>
 
+<!--STATUS_IN_SETTINGS-->
 <div class="status">
   <Header />
   <Version />
   <Motd />
   <Status />
 </div>
+<!--END-->
 
 <Box>
   <SettingsHeader />
@@ -32,9 +34,11 @@
     background-color: black;
   }
 
+/*STATUS_IN_SETTINGS*/
   .status {
     float: left;
     overflow: hidden;
     width: 550px;
   }
+  /*END*/
 </style>

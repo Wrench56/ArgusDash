@@ -6,11 +6,21 @@
 </div>
 
 <style>
+/*STATUS_IN_SETTINGS*/
   .box {
     height: fit-content;
     padding: 10px;
     margin: 15px 10px 15px 600px;
-    flex-grow: 1;
     border: 1px solid whitesmoke;
   }
+  /*END*/
+
+/*!STATUS_IN_SETTINGS
+  .box {
+    height: fit-content;
+    padding: 10px;
+    margin: 15px 10px 15px 10;
+    border: 1px solid whitesmoke;
+  }
+  /*END*/
 </style>
