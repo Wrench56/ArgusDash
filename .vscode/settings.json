@@ -7,5 +7,6 @@
             "title": "System Logs",
             "pattern": "src/backend/logs/system.log"
         }
-    ]
+    ],
+    "pylint.cwd": "${workspaceFolder}/src/backend/"
 }
