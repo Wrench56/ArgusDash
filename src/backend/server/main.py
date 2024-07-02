@@ -1,3 +1,5 @@
+from typing import Any
+
 import datetime
 import logging
 
@@ -5,6 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
+from api import expose
 from db import users
 from server import build
 from utils import config, const, motd, settings, status
@@ -50,7 +53,8 @@ async def rebuild(request: Request) -> PlainTextResponse:
         return PlainTextResponse('ERROR: BUILD')
     build_size, units = build.get_frontend_size()
     return PlainTextResponse(
-        f'REBUILT: Rebuilt in {build_time}ms\nSize of build folder: {build_size}{units}'
+        f'REBUILT: Rebuilt in {
+            build_time}ms\nSize of build folder: {build_size}{units}'
     )
 
 
@@ -76,7 +80,8 @@ async def login(request: Request) -> PlainTextResponse:
 
     uuid = database.create_uuid(username)
     logging.info(f'Welcome user "{username}"!')
-    expire_time = float(config.get('security').get('auth_cookie_expire_time') or 3600.0)
+    expire_time = float(config.get('security').get(
+        'auth_cookie_expire_time') or 3600.0)
     response.set_cookie(
         key='auth_cookie',
         value=uuid,
@@ -119,4 +124,23 @@ async def update_setting(request: Request, id_: str) -> PlainTextResponse:
     data = await request.body()
     settings.update_setting(id_, data.decode())
 
+    return response
+
+
+# Plugins
+@app.get('/plugins/{plugin}/{endpoint:path}')
+@app.put('/plugins/{plugin}/{endpoint:path}')
+@app.post('/plugins/{plugin}/{endpoint:path}')
+@app.delete('/plugins/{plugin}/{endpoint:path}')
+async def plugins(request: Request, plugin: str, endpoint: str) -> Any:
+    response = PlainTextResponse()
+    if not database.uuid_exists(request.cookies.get('auth_cookie')):
+        response.status_code = 401
+        return response
+
+    # Remove sensitive cookie(s)
+    request.cookies['auth_cookie'] = ''
+    callback = expose.fetch_callback(plugin, endpoint, request.method)
+    if callback:
+        return callback(endpoint, request)
     return response
