@@ -12,10 +12,10 @@ def get() -> Dict[str, str]:
 
 
 def update() -> None:
-    cwd = config.get('frontend').get('path')
-    stdout = None if config.get('status').get('show_output').lower() == 'true' else subprocess.DEVNULL
-    disabled = tuple(map(str.strip, config.get('status').get('disable_statuses').split(',')))
-    _login_disabled.extend(tuple(map(str.strip, config.get('login').get('disable_statuses').split(','))))
+    cwd = config.fetch().get('frontend').get('path')
+    stdout = None if config.fetch().get('status').get('show_output') else subprocess.DEVNULL
+    disabled = tuple(map(str.strip, config.fetch().get('status').get('disable_statuses')))
+    _login_disabled.extend(tuple(map(str.strip, config.fetch().get('login').get('disable_statuses'))))
 
     if 'npm_doct' not in disabled:
         _status['npm_doct'] = _run_npm_doctor(cwd, stdout)

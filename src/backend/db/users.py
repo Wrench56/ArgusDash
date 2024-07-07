@@ -19,9 +19,7 @@ class User:
         return self._uuid
 
     def _generate_expire_time(self):
-        expire_time = float(
-            config.get('security').get('auth_cookie_expire_time') or 3600.0
-        )
+        expire_time = config.fetch().get('security').get('auth_cookie_expire_time') or 3600.0
         self._expire_time = datetime.datetime.now() + datetime.timedelta(
             seconds=expire_time
         )
