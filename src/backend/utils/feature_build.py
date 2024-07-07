@@ -69,7 +69,7 @@ def _decode_feature_files(feature: str) -> Optional[List[str]]:
     if not filenames:
         logging.error(f'Non-existing feature: "{feature}"')
         return None
-    path = config.get('frontend').get('path')
+    path = config.fetch().get('frontend').get('path')
     return [f'{path}/{filename}' for filename in filenames]
 
 

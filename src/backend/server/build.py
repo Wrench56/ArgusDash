@@ -8,14 +8,14 @@ from utils import config, perf, processes
 
 
 def _start_frontend_build() -> subprocess.Popen:
-    conf = config.get('frontend')
+    conf = config.fetch().get('frontend')
     return processes.add_subprocess(
         subprocess.Popen(
             conf.get('build').split(' '),
             cwd=conf.get('path'),
             stdout=(
                 None
-                if conf.get('show_output').lower() == 'true'
+                if conf.get('show_output')
                 else subprocess.DEVNULL
             ),
             shell=True,
@@ -38,7 +38,7 @@ def build_frontend() -> int:
 
 
 def get_frontend_size() -> Tuple[float, str]:
-    root_directory = Path(config.get('frontend').get('build_path'))
+    root_directory = Path(config.fetch().get('frontend').get('build_path'))
     return _format_units(
         sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
     )

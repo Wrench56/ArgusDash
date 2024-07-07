@@ -1,14 +1,32 @@
-from configparser import ConfigParser
-from typing import Any, Optional
+import tomllib
+from typing import Any, Dict, Optional
 import logging
 
-_config: ConfigParser = ConfigParser()
+
+class Wrapper:
+    def __init__(self) -> None:
+        self.config: Optional[Dict[Any, Any]] = None
+
+    def set(self, config: Dict[Any, Any]) -> None:
+        self.config = config
+
+    def get(self) -> Optional[Dict[Any, Any]]:
+        return self.config
+
+
+_config: Wrapper = Wrapper()
 
 
 def load() -> None:
-    _config.read('config/config.ini')
+    with open("config/config.toml", "rb") as f:
+        _config.set(tomllib.load(f))
+        f.close()
     logging.info('Config loaded')
 
 
-def get(field: str) -> Optional[Any]:
-    return _config[field]
+def fetch() -> Dict[Any, Any]:
+    dict_ = _config.get()
+    if dict_ is None:
+        logging.critical('Config used before being loaded')
+        return {}
+    return dict_

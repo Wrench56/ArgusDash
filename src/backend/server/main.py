@@ -66,7 +66,7 @@ async def login_page() -> FileResponse:
 
 @app.get('/login/motd', response_class=PlainTextResponse)
 async def motd_text() -> PlainTextResponse:
-    return PlainTextResponse(motd.format_(config.get('frontend').get('motd'), database))
+    return PlainTextResponse(motd.format_(config.fetch().get('frontend').get('motd'), database))
 
 
 @app.post('/auth', response_class=PlainTextResponse)
@@ -80,7 +80,7 @@ async def login(request: Request) -> PlainTextResponse:
 
     uuid = database.create_uuid(username)
     logging.info(f'Welcome user "{username}"!')
-    expire_time = float(config.get('security').get(
+    expire_time = float(config.fetch().get('security').get(
         'auth_cookie_expire_time') or 3600.0)
     response.set_cookie(
         key='auth_cookie',
