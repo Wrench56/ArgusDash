@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, Tuple, Optional
 
 import importlib
 import logging
@@ -7,11 +7,14 @@ from plugins.base_plugin import Plugin
 from plugins import priority
 
 
-_PLUGINS: List[Plugin] = []
+_PLUGINS: Dict[str, Plugin] = {}
 
 
 def load_all() -> None:
     for plugin_name, prio in priority.fetch_plugins():
+        # Skip if plugin has already been loaded
+        if _PLUGINS.get(plugin_name) is not None:
+            continue
         logging.info(f'Loading plugin "{plugin_name}" with priority {prio}')
         plugin = load(plugin_name)
         if plugin is not None:
@@ -22,8 +25,8 @@ def load(name: str) -> Optional[Plugin]:
     try:
         source = f'plugins.plugins.{name}.backend.main'
         plugin: Plugin = importlib.import_module(source).init()
-        if plugin and plugin not in _PLUGINS:
-            _PLUGINS.append(plugin)
+        if plugin:
+            _PLUGINS[name] = plugin
         return plugin
     except TypeError:
         # Abstract class (Plugin) does not implement methods like load & unload
@@ -38,5 +41,5 @@ def load(name: str) -> Optional[Plugin]:
     return None
 
 
-def get_plugin_names() -> List[str]:
-    return [plugin.name for plugin in _PLUGINS]
+def get_plugin_names() -> Tuple[str, ...]:
+    return tuple(_PLUGINS.keys())
