@@ -3,16 +3,18 @@ import sys
 
 from typing import Dict, List, Optional
 from utils import config, processes
+from utils.const import FRONTEND_PATH
 
 _status: Dict[str, str] = {}
 _login_disabled: List[str] = []
+
 
 def get() -> Dict[str, str]:
     return _status.copy()
 
 
 def update() -> None:
-    cwd = config.fetch().get('frontend').get('path')
+    cwd = FRONTEND_PATH
     stdout = None if config.fetch().get('status').get('show_output') else subprocess.DEVNULL
     disabled = tuple(map(str.strip, config.fetch().get('status').get('disable_statuses')))
     _login_disabled.extend(tuple(map(str.strip, config.fetch().get('login').get('disable_statuses'))))

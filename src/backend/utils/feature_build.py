@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Tuple
 import logging
 
 from utils import config
+from utils.const import FRONTEND_PATH
 
 _FILE_OF_FEATURE: Dict[str, Tuple] = {
     'STATUS_IN_SETTINGS': ('src/routes/settings/+page.svelte', 'src/lib/components/settings/Box.svelte',),
@@ -69,8 +70,7 @@ def _decode_feature_files(feature: str) -> Optional[List[str]]:
     if not filenames:
         logging.error(f'Non-existing feature: "{feature}"')
         return None
-    path = config.fetch().get('frontend').get('path')
-    return [f'{path}/{filename}' for filename in filenames]
+    return [f'{FRONTEND_PATH}/{filename}' for filename in filenames]
 
 
 def _find_html_features(feature: str, lines: list) -> List[int]:

@@ -1,7 +1,5 @@
 [frontend]
-path = "../frontend"
 build = "npm run build"
-build_path = "../public"
 show_output = true
 motd = "Memory: {{teal}}{{memory_used}} MB{{end}} / {{memory_total}} MB\nCPU: {{teal}}{{cpu_percent}}%{{end}}\nUsers: {{teal}}{{active_users}}{{end}}\nHave a great day!"
 

@@ -5,6 +5,7 @@ import subprocess
 
 from pathlib import Path
 from utils import config, perf, processes
+from utils.const import BUILD_PATH, FRONTEND_PATH
 
 
 def _start_frontend_build() -> subprocess.Popen:
@@ -12,7 +13,7 @@ def _start_frontend_build() -> subprocess.Popen:
     return processes.add_subprocess(
         subprocess.Popen(
             conf.get('build').split(' '),
-            cwd=conf.get('path'),
+            cwd=FRONTEND_PATH,
             stdout=(
                 None
                 if conf.get('show_output')
@@ -38,7 +39,7 @@ def build_frontend() -> int:
 
 
 def get_frontend_size() -> Tuple[float, str]:
-    root_directory = Path(config.fetch().get('frontend').get('build_path'))
+    root_directory = Path(BUILD_PATH)
     return _format_units(
         sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
     )
