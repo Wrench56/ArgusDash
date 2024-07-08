@@ -1,10 +1,13 @@
-from typing import Optional
+from typing import List, Optional
 
 import importlib
 import logging
 
 from plugins.base_plugin import Plugin
 from plugins import priority
+
+
+_PLUGINS: List[Plugin] = []
 
 
 def load_all() -> None:
@@ -19,6 +22,8 @@ def load(name: str) -> Optional[Plugin]:
     try:
         source = f'plugins.plugins.{name}.backend.main'
         plugin: Plugin = importlib.import_module(source).init()
+        if plugin and plugin not in _PLUGINS:
+            _PLUGINS.append(plugin)
         return plugin
     except TypeError:
         # Abstract class (Plugin) does not implement methods like load & unload
@@ -31,3 +36,7 @@ def load(name: str) -> Optional[Plugin]:
         logging.error(f'Plugin "{name}" does not exist')
 
     return None
+
+
+def get_plugin_names() -> List[str]:
+    return [plugin.name for plugin in _PLUGINS]

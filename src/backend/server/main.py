@@ -213,3 +213,11 @@ async def ws_plugins(websocket: WebSocket, plugin: str, endpoint: str) -> Any:
         logging.error(f'Plugin "{plugin}" uses synchronous functions, request blocked')
         response.status_code = 503
         return response
+
+
+@app.get('/plugins/status', response_class=ORJSONResponse)
+async def plugin_status(request: Request) -> ORJSONResponse:
+    if not database.uuid_exists(request.cookies.get('auth_cookie')):
+        return ORJSONResponse({'ok': False})
+
+    return ORJSONResponse({'ok': True, 'plugins': handler.get_plugin_names()})
