@@ -14,6 +14,7 @@
         notifyDesktop: false,
       });
     }
+    localStorage.removeItem("rebuild");
   });
 
   function rebuild() {
