@@ -81,7 +81,7 @@
     font-size: 12px;
     margin: 0px;
     display: grid;
-    grid-column: 4;
+    grid-column: 5;
   }
 
   span {

@@ -39,6 +39,6 @@
     font-size: 12px;
     margin: 0px;
     display: grid;
-    grid-column: 6;
+    grid-column: 7;
   }
 </style>
