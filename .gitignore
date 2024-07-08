@@ -15,3 +15,11 @@ src/backend/plugins/plugins
 
 # Ignore built frontend
 public
+
+# Ignore plugin pages
+src/frontend/src/routes/plugins/**
+!src/frontend/src/routes/plugins/+layout.ts
+!src/frontend/src/routes/plugins/+page.svelte
+
+# Ignore plugin components
+src/frontend/src/lib/plugins

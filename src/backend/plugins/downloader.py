@@ -1,38 +1,44 @@
 from typing import Optional
 
-from plugins import unpack
-from utils.const import PLUGINS_DIR, PLUGINS_DOWNLOAD
+from plugins import handler, priority, unpack, validate
+from utils.const import PLUGINS_DOWNLOAD
 
-from configparser import ConfigParser
 import logging
+import tomllib
 
 import requests
 
 
 def from_url(url: str) -> bool:
-    plugin_ini = _download_plugin_ini(url)
-    if plugin_ini is None:
+    plugin_toml = _download_plugin_toml(url)
+    if plugin_toml is None:
         return False
 
-    config = ConfigParser()
-    config.read_string(plugin_ini)
-    name = config['package'].get('name')
-    zip_url = config['package'].get('zip_url')
+    config = tomllib.loads(plugin_toml)
+    if not validate.validate_toml(config):
+        return False
+
+    name = config['plugin'].get('name').replace('-', '_')
+    zip_url = config['plugin'].get('zip_url')
 
     if not _download_plugin_zip(zip_url, name):
         return False
     if not unpack.unzip(name):
         return False
-    if not unpack.unpack(f'{PLUGINS_DIR}/{name}', 'plugin.ini'):
+    if not unpack.unpack(name, 'Plugin.toml'):
+        return False
+    if not unpack.distribute(name):
         return False
 
+    priority.add_new_plugin(name, 2)
+    handler.load(name)
     return True
 
 
-def _download_plugin_ini(url: str) -> Optional[str]:
+def _download_plugin_toml(url: str) -> Optional[str]:
     res = requests.get(url, timeout=10)
     if not res.ok:
-        logging.error(f'Can\'t download plugin.ini at "{url}"')
+        logging.error(f'Can\'t download Plugin.toml at "{url}"')
         return None
     return res.text
 
