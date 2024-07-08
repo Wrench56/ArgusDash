@@ -22,7 +22,6 @@
           fetchNextNotification(get(NotificationStore));
         }
       });
-      console.log(notification.notification.data.id);
     }
   }
 </script>
