@@ -7,7 +7,7 @@
 
   import Box from "$lib/components/settings/Box.svelte";
   import SettingsHeader from "$lib/components/settings/Header.svelte";
-  import Separator from "$lib/components/settings/Separator.svelte";
+  import Separator from "$lib/components/shared/Separator.svelte";
   import SettingsContainer from "$lib/components/settings/SettingsContainer.svelte";
   import DNotificationContainer from "$lib/notifications/DNotificationContainer.svelte";
 </script>
