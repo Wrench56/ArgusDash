@@ -12,12 +12,17 @@ from api import expose
 from db import users
 from plugins import downloader, handler
 from server import build
+from server.endpoint_filter import EndpointFilter
 from utils import config, const, motd, settings, status
 
 database = users.Database()
 
 app = FastAPI()
 app.mount('/assets', StaticFiles(directory='../public/assets'), name='static')
+
+# Ignore /ping logs
+uvicorn_logger = logging.getLogger('uvicorn.access')
+uvicorn_logger.addFilter(EndpointFilter(path='/ping'))
 
 
 @app.get('/favicon.png', include_in_schema=False)
