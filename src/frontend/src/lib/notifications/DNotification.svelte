@@ -22,8 +22,6 @@
       }, 1);
     }
   }
-
-  $: state ? console.log("X" + $state) : null;
 </script>
 
 <div class="container container-{$state} {wrapper.data.priority}">
