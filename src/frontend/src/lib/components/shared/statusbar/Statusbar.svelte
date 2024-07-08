@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Version from "$lib/components/dashboard/statusbar/BuildVersion.svelte";
+  import Version from "./BuildVersion.svelte";
   import Clock from "./Clock.svelte";
   import Latency from "./Latency.svelte";
   import Rebuild from "./Rebuild.svelte";
