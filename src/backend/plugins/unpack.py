@@ -13,17 +13,17 @@ import shutil
 import zipfile
 
 
-def unzip(name: str) -> bool:
-    _clear_prev_installation(name)
-    with zipfile.ZipFile(f'{PLUGINS_DOWNLOAD}/{name}.zip', 'r') as zip_ref:
-        zip_ref.extractall(f'{PLUGINS_DIR}/{name}')
+def unzip(plugin_name: str) -> bool:
+    _clear_prev_installation(plugin_name)
+    with zipfile.ZipFile(f'{PLUGINS_DOWNLOAD}/{plugin_name}.zip', 'r') as zip_ref:
+        zip_ref.extractall(f'{PLUGINS_DIR}/{plugin_name}')
 
     return True
 
 
-def _clear_prev_installation(name: str) -> None:
-    if os.path.exists(f'{PLUGINS_DIR}/{name}'):
-        shutil.rmtree(f'{PLUGINS_DIR}/{name}')
+def _clear_prev_installation(plugin_name: str) -> None:
+    if os.path.exists(f'{PLUGINS_DIR}/{plugin_name}'):
+        shutil.rmtree(f'{PLUGINS_DIR}/{plugin_name}')
 
 
 def _find_target_file(root_dir: str, target: str) -> Optional[str]:
@@ -67,19 +67,28 @@ def distribute(plugin_name: str) -> bool:
     _clear_frontend_installation(plugin_name)
     root_dir = f'{PLUGINS_DIR}/{plugin_name}'
     if os.path.exists(f'{root_dir}/frontend'):
-        shutil.move(f'{root_dir}/frontend', f'{FRONTEND_PLUGINS_DIR}/{plugin_name}')
+        shutil.move(f'{root_dir}/frontend',
+                    f'{FRONTEND_PLUGINS_DIR}/{plugin_name}')
     else:
-        logging.warning(f'Frontend directorty of plugin "{plugin_name}" does not exist')
+        logging.warning(f'Frontend directorty of plugin "{
+                        plugin_name}" does not exist')
 
     if os.path.exists(f'{root_dir}/pages'):
         shutil.move(f'{root_dir}/pages', f'{FRONTEND_PAGES_DIR}/{plugin_name}')
     else:
-        logging.warning(f'Pages directory of plugin "{plugin_name}" does not exist')
+        logging.warning(f'Pages directory of plugin "{
+                        plugin_name}" does not exist')
     return True
 
 
-def _clear_frontend_installation(name: str) -> None:
-    if os.path.exists(f'{FRONTEND_PLUGINS_DIR}/{name}'):
-        shutil.rmtree(f'{FRONTEND_PLUGINS_DIR}/{name}')
-    if os.path.exists(f'{FRONTEND_PAGES_DIR}/{name}'):
-        shutil.rmtree(f'{FRONTEND_PAGES_DIR}/{name}')
+def _clear_frontend_installation(plugin_name: str) -> None:
+    if os.path.exists(f'{FRONTEND_PLUGINS_DIR}/{plugin_name}'):
+        shutil.rmtree(f'{FRONTEND_PLUGINS_DIR}/{plugin_name}')
+    if os.path.exists(f'{FRONTEND_PAGES_DIR}/{plugin_name}'):
+        shutil.rmtree(f'{FRONTEND_PAGES_DIR}/{plugin_name}')
+
+
+def revert(plugin_name: str) -> None:
+    logging.info(f'Reverting installation of plugin "{plugin_name}"')
+    _clear_prev_installation(plugin_name)
+    _clear_frontend_installation(plugin_name)

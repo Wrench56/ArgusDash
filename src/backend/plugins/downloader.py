@@ -1,6 +1,6 @@
 from typing import Optional
 
-from plugins import handler, priority, unpack, validate
+from plugins import dependencies, handler, priority, unpack, validate
 from utils.const import PLUGINS_DOWNLOAD
 
 import logging
@@ -21,14 +21,27 @@ def from_url(url: str) -> bool:
     name = config['plugin'].get('name').replace('-', '_')
     zip_url = config['plugin'].get('zip_url')
 
-    if not _download_plugin_zip(zip_url, name):
-        return False
-    if not unpack.unzip(name):
-        return False
-    if not unpack.unpack(name, 'Plugin.toml'):
-        return False
-    if not unpack.distribute(name):
-        return False
+    try:
+        if not _download_plugin_zip(zip_url, name):
+            return False
+        if not unpack.unzip(name):
+            unpack.revert(name)
+            return False
+        if not unpack.unpack(name, 'Plugin.toml'):
+            unpack.revert(name)
+            return False
+        if not unpack.distribute(name):
+            unpack.revert(name)
+            return False
+        if not dependencies.python(name):
+            unpack.revert(name)
+            return False
+        if not dependencies.node(name):
+            unpack.revert(name)
+            return False
+    except Exception as e:
+        unpack.revert(name)
+        raise e
 
     priority.add_new_plugin(name, 2)
     handler.load(name)
