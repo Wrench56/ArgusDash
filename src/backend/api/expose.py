@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from fastapi import Request, WebSocket
 
@@ -9,10 +9,10 @@ CallbackFunctionType = Callable[[str, Union[Request, WebSocket]], Any]
 
 class TrieNode:
     def __init__(self):
-        self.children = {}
+        self.children: Dict[str, TrieNode] = {}
         self.callback: Optional[CallbackFunctionType] = None
 
-    def __str__(self, level=0):
+    def __str__(self, level=0) -> str:
         result = []
         indent = ' ' * (level * 2)
         if self.callback:
@@ -26,8 +26,8 @@ class TrieNode:
 
 
 class URLRouter:
-    def __init__(self):
-        self.routes = {}
+    def __init__(self) -> None:
+        self.routes: Dict[str, Dict[str, TrieNode]] = {}
 
     def add_route(
         self,
@@ -35,9 +35,10 @@ class URLRouter:
         plugin_name: str,
         pattern: str,
         callback: CallbackFunctionType,
-    ):
+    ) -> None:
         parts = pattern.strip('/').split('/')
-        node = self.routes.setdefault(method, {}).setdefault(plugin_name, TrieNode())
+        node = self.routes.setdefault(
+            method, {}).setdefault(plugin_name, TrieNode())
 
         for part in parts:
             if part not in node.children:
@@ -47,7 +48,37 @@ class URLRouter:
         # Replace the existing callback with the new one
         node.callback = callback
 
-    def match(self, method: str, plugin_name: str, url: str):
+    def remove_route(self, method: str, plugin_name: str, pattern: str) -> bool:
+        parts = pattern.strip('/').split('/')
+        node = self.routes.get(method, {}).get(plugin_name)
+
+        if not node:
+            return False
+
+        return self._remove_parts(node, parts, 0)
+
+    def _remove_parts(self, node: TrieNode, parts: List[str], index: int) -> bool:
+        if index == len(parts):
+            if node.callback:
+                node.callback = None
+                return len(node.children) == 0
+            return False
+
+        part = parts[index]
+        if part in node.children:
+            should_delete_child = self._remove_parts(
+                node.children[part], parts, index + 1)
+            if should_delete_child:
+                del node.children[part]
+                return len(node.children) == 0 and node.callback is None
+        return False
+
+    def remove_plugin(self, plugin_name: str) -> None:
+        self.routes = {method: {pn: pd for pn, pd in plugin_dict.items() if pn != plugin_name}
+                       for method, plugin_dict in self.routes.items()
+                       if any(pn != plugin_name for pn in plugin_dict)}
+
+    def match(self, method: str, plugin_name: str, url: str) -> Optional[CallbackFunctionType]:
         parts = url.strip('/').split('/')
         node = self.routes.get(method, {}).get(plugin_name, TrieNode())
         return self._match_parts(node, parts, 0)
@@ -78,7 +109,7 @@ class URLRouter:
 
         return None
 
-    def __str__(self):
+    def __str__(self) -> str:
         result = []
         for method, plugin_dict in self.routes.items():
             result.append(f'Method: {method}')
@@ -126,3 +157,17 @@ def fetch_callback(
     plugin: str, url: str, method: str
 ) -> Optional[CallbackFunctionType]:
     return _ROUTER.match(method.upper(), plugin, url)
+
+
+def unsubscribe(endpoint: str, method: str) -> bool:
+    module_name = stack.get_caller(depth=2)[0]
+    if not module_name.startswith('plugins.plugins.'):
+        return False
+    return _ROUTER.remove_route(method, module_name.split('.')[2], endpoint)
+
+
+# Do not allow plugins to use this
+def unload_plugin(name: str) -> None:
+    if stack.get_caller(depth=2)[0].startswith('plugins.plugins.'):
+        return
+    _ROUTER.remove_plugin(name)

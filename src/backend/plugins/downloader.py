@@ -19,6 +19,9 @@ def from_url(url: str) -> bool:
         return False
 
     name = config['plugin'].get('name').replace('-', '_')
+    handler.unload(name)
+    priority.remove_plugin(name)
+
     zip_url = config['plugin'].get('zip_url')
 
     try:
@@ -45,6 +48,7 @@ def from_url(url: str) -> bool:
 
     priority.add_new_plugin(name, 2)
     handler.load(name)
+    logging.info(f'Plugin "{name}" installed successfully')
     return True
 
 
