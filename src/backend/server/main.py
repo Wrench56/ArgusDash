@@ -182,7 +182,8 @@ async def plugins(request: Request, plugin: str, endpoint: str) -> Any:
         return_value = await callback(endpoint, request)
     else:
         # Sync function detected
-        logging.error(f'Plugin "{plugin}" uses synchronous functions, request blocked')
+        logging.error(
+            f'Plugin "{plugin}" uses synchronous functions, request blocked')
         response.status_code = 503
     if return_value is not None:
         return return_value
@@ -210,7 +211,8 @@ async def ws_plugins(websocket: WebSocket, plugin: str, endpoint: str) -> Any:
         await callback(endpoint, websocket)
     else:
         # Sync function detected
-        logging.error(f'Plugin "{plugin}" uses synchronous functions, request blocked')
+        logging.error(
+            f'Plugin "{plugin}" uses synchronous functions, request blocked')
         response.status_code = 503
         return response
 
@@ -218,6 +220,6 @@ async def ws_plugins(websocket: WebSocket, plugin: str, endpoint: str) -> Any:
 @app.get('/plugins/status', response_class=ORJSONResponse)
 async def plugin_status(request: Request) -> ORJSONResponse:
     if not database.uuid_exists(request.cookies.get('auth_cookie')):
-        return ORJSONResponse({'ok': False})
+        return ORJSONResponse({'ok': False, 'error': 'Auth failed'})
 
-    return ORJSONResponse({'ok': True, 'plugins': handler.get_plugin_names()})
+    return ORJSONResponse({'ok': True, 'plugins': handler.get_plugin_statuses()})

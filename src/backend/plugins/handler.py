@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Optional
+from typing import Any, Dict, List,  Optional, Tuple
 
 import importlib
 import logging
@@ -78,3 +78,14 @@ def unload_all() -> bool:
 
 def get_plugin_names() -> Tuple[str, ...]:
     return tuple(_PLUGINS.keys())
+
+
+def get_plugin_statuses() -> List[Dict[str, Any]]:
+    result = []
+    for name, _ in priority.fetch_plugins(reload=False):
+        if name in _PLUGINS:
+            result.append({'name': name, 'status': True})
+            continue
+        result.append({'name': name, 'status': False})
+
+    return result
