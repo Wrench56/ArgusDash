@@ -7,11 +7,21 @@ from utils.const import PLUGINS_DIR
 _PRIORITIES: List[Tuple[str, int]] = []
 
 
-def fetch_plugins() -> Generator[Tuple[str, int], None, None]:
+def fetch_plugins(reload: bool = False) -> Generator[Tuple[str, int], None, None]:
+    if not reload and len(_PRIORITIES) > 0:
+        for pp_pair in _PRIORITIES:
+            yield ((pp_pair[0], pp_pair[1]))
+        return
+
     with open(f'{PLUGINS_DIR}/priorities.csv', 'r', encoding='utf-8') as f:
-        name, priority = f.readline().strip().split(',')
-        _PRIORITIES.append((name, int(priority)))
-        yield (name, int(priority))
+        while True:
+            line = f.readline()
+            if not line:
+                # EOF
+                break
+            name, priority = line.strip().split(',')
+            _PRIORITIES.append((name, int(priority)))
+            yield (name, int(priority))
         f.close()
 
 
