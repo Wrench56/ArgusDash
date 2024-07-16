@@ -1,6 +1,7 @@
 from typing import Any, AsyncGenerator
 
 import asyncio
+import contextlib
 import datetime
 import inspect
 import json
@@ -16,12 +17,17 @@ from db import users
 from plugins import downloader, handler
 from server import build
 from server.endpoint_filter import EndpointFilter
-from utils import config, const, motd, settings, status
+from utils import cleanup, config, const, motd, settings, status
 
 database = users.Database()
 
 app = FastAPI()
 app.mount('/assets', StaticFiles(directory='../public/assets'), name='static')
+
+# Note: Put this after FastAPI init!
+# cleanup.init(...) uses the previously
+# set signal handler.
+cleanup.init('server')
 
 # Ignore /ping logs
 uvicorn_logger = logging.getLogger('uvicorn.access')
@@ -227,7 +233,7 @@ async def plugin_status(request: Request) -> EventSourceResponse:
     handler.set_update_flag()
 
     async def event_generator() -> AsyncGenerator[str, None]:
-        while True:
+        while not cleanup.get_flag():
             if await request.is_disconnected():
                 break
 
@@ -235,6 +241,6 @@ async def plugin_status(request: Request) -> EventSourceResponse:
                 yield json.dumps(
                     {'ok': True, 'plugins': handler.get_plugin_statuses()}
                 )
-            await asyncio.sleep(2.0)
+            await asyncio.sleep(1.0)
 
     return EventSourceResponse(event_generator(), media_type='text/event-stream')

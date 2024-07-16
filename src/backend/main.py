@@ -1,13 +1,8 @@
 import logging
 import logging.config
 
-import asyncio
-import atexit
-import signal
-import sys
-
 from server import build, start
-from utils import config, processes, status
+from utils import config, cleanup, status
 
 
 def main() -> None:
@@ -21,9 +16,7 @@ def main() -> None:
     status.update()
 
     # Register cleanup functions
-    atexit.register(lambda: cleanup)
-    signal.signal(signal.SIGTERM, lambda _, __: cleanup())
-    signal.signal(signal.SIGINT, lambda _, __: cleanup())
+    cleanup.init('main')
 
     # Build the frontend with Vite
     build.build_frontend()
@@ -37,17 +30,8 @@ def init_logger():
     logging.info('Logging init done')
 
 
-def cleanup() -> None:
-    logging.info('Cleaning up...')
-    processes.terminate_subprocesses()
-    loop = asyncio.get_event_loop()
-    for task in asyncio.all_tasks(loop=loop):
-        task.cancel()
-    loop.stop()
-
-    # Raises SystemExit
-    sys.exit()
-
-
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
