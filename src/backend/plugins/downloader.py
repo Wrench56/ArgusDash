@@ -1,6 +1,7 @@
 from typing import Optional
 
 from plugins import dependencies, handler, priority, unpack, validate
+from server import build
 from utils.const import PLUGINS_DOWNLOAD
 
 import logging
@@ -42,6 +43,8 @@ def from_url(url: str) -> bool:
         if not dependencies.node(name):
             unpack.revert(name)
             return False
+
+        build.build_frontend()
     except Exception as e:
         unpack.revert(name)
         raise e
