@@ -1,6 +1,7 @@
 import logging
 import logging.config
 
+import asyncio
 import atexit
 import signal
 import sys
@@ -37,7 +38,12 @@ def init_logger():
 
 
 def cleanup() -> None:
+    logging.info('Cleaning up...')
     processes.terminate_subprocesses()
+    loop = asyncio.get_event_loop()
+    for task in asyncio.all_tasks(loop=loop):
+        task.cancel()
+    loop.stop()
 
     # Raises SystemExit
     sys.exit()

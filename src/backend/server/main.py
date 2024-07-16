@@ -1,12 +1,15 @@
-from typing import Any, Optional
+from typing import Any, AsyncGenerator
 
+import asyncio
 import datetime
 import inspect
+import json
 import logging
 
 from fastapi import BackgroundTasks, FastAPI, Request, WebSocket
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
+from sse_starlette.sse import EventSourceResponse
 
 from api import expose
 from db import users
@@ -217,9 +220,21 @@ async def ws_plugins(websocket: WebSocket, plugin: str, endpoint: str) -> Any:
         return response
 
 
-@app.get('/plugins/status', response_class=ORJSONResponse)
-async def plugin_status(request: Request) -> ORJSONResponse:
+@app.get('/plugins/status', response_class=EventSourceResponse)
+async def plugin_status(request: Request) -> EventSourceResponse:
     if not database.uuid_exists(request.cookies.get('auth_cookie')):
-        return ORJSONResponse({'ok': False, 'error': 'Auth failed'})
+        return EventSourceResponse(content=iter(('Authentication failed',)), status_code=401)
+    handler.set_update_flag()
 
-    return ORJSONResponse({'ok': True, 'plugins': handler.get_plugin_statuses()})
+    async def event_generator() -> AsyncGenerator[str, None]:
+        while True:
+            if await request.is_disconnected():
+                break
+
+            if handler.is_updated():
+                yield json.dumps(
+                    {'ok': True, 'plugins': handler.get_plugin_statuses()}
+                )
+            await asyncio.sleep(2.0)
+
+    return EventSourceResponse(event_generator(), media_type='text/event-stream')
