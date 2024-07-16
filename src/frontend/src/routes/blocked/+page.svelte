@@ -4,8 +4,11 @@
   }
 </script>
 
+<svelte:window on:keydown|preventDefault={redirect} />
+
 <h1>Blocked</h1>
-<p>You are not logged in!</p>
+<p>You are not logged in!
+Press any key to be redirected.</p>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -20,6 +23,7 @@
   p {
     color: whitesmoke;
     font-family: monaco, Consolas, "Lucida Console", monospace;
+    white-space: pre-line;
   }
 
   .redirect {
