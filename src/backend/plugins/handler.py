@@ -6,9 +6,11 @@ import logging
 from api import expose
 from plugins.base_plugin import Plugin
 from plugins import priority
+from utils.flag import Flag
 
 
 _PLUGINS: Dict[str, Plugin] = {}
+_PLUGINS_UPDATED = Flag(True)
 
 
 def load_all() -> None:
@@ -26,6 +28,7 @@ def load_all() -> None:
 
 
 def load(name: str) -> Optional[Plugin]:
+    _PLUGINS_UPDATED.set()
     try:
         source = f'plugins.plugins.{name}.backend.main'
         plugin: Plugin = importlib.import_module(source).init()
@@ -81,6 +84,7 @@ def get_plugin_names() -> Tuple[str, ...]:
 
 
 def get_plugin_statuses() -> List[Dict[str, Any]]:
+    _PLUGINS_UPDATED.reset()
     result = []
     for name, _ in priority.fetch_plugins(reload=False):
         if name in _PLUGINS:
@@ -89,3 +93,11 @@ def get_plugin_statuses() -> List[Dict[str, Any]]:
         result.append({'name': name, 'status': False})
 
     return result
+
+
+def is_updated() -> bool:
+    return _PLUGINS_UPDATED.get()
+
+
+def set_update_flag() -> None:
+    _PLUGINS_UPDATED.set()

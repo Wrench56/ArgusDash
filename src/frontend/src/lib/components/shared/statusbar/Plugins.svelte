@@ -1,23 +1,34 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { initEventSources, pluginStatusStream } from "../api/streams";
+  import type { PluginStatusContainer } from "../api/plugins.type";
 
   let out_of: string = "";
   let status: string = "success";
   let content: string = "LOAD*";
+
+  function updateStatus(data: PluginStatusContainer) {
+    if (data.ok) {
+      status = "success";
+      out_of = `/${data.plugins.length}`;
+      content = data.plugins.length.toString();
+    } else {
+      status = "failure";
+      out_of = "";
+      content = "ERROR";
+    }
+  }
+
   onMount(() => {
-    fetch("/plugins/status")
-      .then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson.ok == true) {
-          status = "success";
-          out_of = `/${responseJson.plugins.length}`;
-          content = responseJson.plugins.length;
-        } else {
-          status = "failure";
-          out_of = "";
-          content = "ERROR";
-        }
-      });
+    initEventSources();
+    updateStatus(pluginStatusStream.fetch());
+    const unsubscribe = pluginStatusStream.subscribe(
+      (data: PluginStatusContainer) => updateStatus(data)
+    );
+
+    return () => {
+      unsubscribe();
+    };
   });
 </script>
 

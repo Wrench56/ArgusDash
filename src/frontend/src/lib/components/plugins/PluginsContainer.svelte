@@ -1,27 +1,35 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { PluginStatus } from "../shared/api/plugins.type";
+  import type {
+    PluginStatus,
+    PluginStatusContainer,
+  } from "../shared/api/plugins.type";
   import Error from "./Error.svelte";
   import Plugin from "./Plugin.svelte";
   import Separator from "../shared/Separator.svelte";
+  import { initEventSources, pluginStatusStream } from "../shared/api/streams";
 
   let plugins: Array<PluginStatus> = [];
   let error: string;
 
+  function updatePluginsList(data: PluginStatusContainer) {
+    if (data.ok == true) {
+      plugins = data.plugins;
+    }
+  }
+
   onMount(() => {
-    fetch("/plugins/status")
-      .then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson.ok == true) {
-          plugins = responseJson.plugins;
-        } else {
-          plugins = [];
-          error = responseJson.error;
-        }
-      });
+    initEventSources();
+    updatePluginsList(pluginStatusStream.fetch());
+    const unsubscribe = pluginStatusStream.subscribe(
+      (data: PluginStatusContainer) => updatePluginsList(data)
+    );
+
+    return () => {
+      unsubscribe();
+    };
   });
 </script>
-
 
 <Separator />
 {#if plugins.length == 0}
