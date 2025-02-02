@@ -8,5 +8,8 @@
             "pattern": "src/backend/logs/system.log"
         }
     ],
-    "pylint.cwd": "${workspaceFolder}/src/backend/"
+    "pylint.cwd": "${workspaceFolder}/src/backend/",
+    "pylint.args": [
+        "--rcfile=${workspaceFolder}/.pylintrc"
+    ]
 }
