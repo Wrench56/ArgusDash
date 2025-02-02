@@ -1,7 +1,6 @@
 from typing import Any, AsyncGenerator
 
 import asyncio
-import contextlib
 import datetime
 import inspect
 import json
@@ -14,7 +13,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from api import expose
 from db import users
-from plugins import downloader, handler
+from plugins import downloader, handler, widgets
 from server import build
 from server.endpoint_filter import EndpointFilter
 from utils import cleanup, config, const, motd, settings, status
@@ -244,3 +243,12 @@ async def plugin_status(request: Request) -> EventSourceResponse:
             await asyncio.sleep(1.0)
 
     return EventSourceResponse(event_generator(), media_type='text/event-stream')
+
+
+@app.get('/plugins/widgets', response_class=ORJSONResponse)
+async def plugin_widgets(request: Request) -> ORJSONResponse:
+    response = ORJSONResponse(content={})
+    if not database.uuid_exists(request.cookies.get('auth_cookie')):
+        response.status_code = 401
+        return response
+    return ORJSONResponse(content=widgets.get())

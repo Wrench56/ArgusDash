@@ -5,7 +5,7 @@ import logging
 
 from api import expose
 from plugins.base_plugin import Plugin
-from plugins import priority
+from plugins import priority, widgets
 from utils.flag import Flag
 
 
@@ -20,6 +20,7 @@ def load_all() -> None:
         if plugin is not None:
             loaded += 1
 
+    widgets.load_all()
     log = f'Loaded {loaded}/{priority.length()} plugins'
     if loaded == priority.length():
         logging.info(log)
