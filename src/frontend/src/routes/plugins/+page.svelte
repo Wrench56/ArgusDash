@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Box from "$lib/components/plugins/Box.svelte";
+  import Box from "$lib/components/shared/Box.svelte";
   import Header from "$lib/components/plugins/Header.svelte";
   import PluginsContainer from "$lib/components/plugins/PluginsContainer.svelte";
   import UrlField from "$lib/components/plugins/UrlField.svelte";
