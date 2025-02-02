@@ -25,7 +25,6 @@ logging-format-style=new
 
 [REPORTS]
 output-format=colorized
-files-output=no
 reports=yes
 
 [SIMILARITIES]
