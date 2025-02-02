@@ -1,16 +1,19 @@
 from typing import Optional
 
-from utils.const import (
-    FRONTEND_PAGES_DIR,
-    FRONTEND_PLUGINS_DIR,
-    PLUGINS_DIR,
-    PLUGINS_DOWNLOAD,
-)
-
 import logging
 import os
 import shutil
 import zipfile
+
+from utils.const import (
+    FRONTEND_PAGES_DIR,
+    FRONTEND_PLUGINS_DIR,
+    FRONTEND_WIDGETS_DIR,
+    PLUGINS_DIR,
+    PLUGINS_DOWNLOAD,
+)
+
+from plugins import widgets
 
 
 def unzip(plugin_name: str) -> bool:
@@ -58,7 +61,7 @@ def unpack(plugin_name: str, target: str) -> bool:
         logging.info('Plugin unpacked')
         return True
 
-    logging.error(f'{target} not found in the plugin folder')
+    logging.error(f"{target} not found in the plugin folder")
     return False
 
 
@@ -67,17 +70,32 @@ def distribute(plugin_name: str) -> bool:
     _clear_frontend_installation(plugin_name)
     root_dir = f'{PLUGINS_DIR}/{plugin_name}'
     if os.path.exists(f'{root_dir}/frontend'):
-        shutil.move(f'{root_dir}/frontend',
-                    f'{FRONTEND_PLUGINS_DIR}/{plugin_name}')
+        shutil.move(f'{root_dir}/frontend', f'{FRONTEND_PLUGINS_DIR}/{plugin_name}')
     else:
-        logging.warning(f'Frontend directorty of plugin "{
-                        plugin_name}" does not exist')
+        logging.warning(
+            f'Frontend directorty of plugin "{
+                        plugin_name}" does not exist'
+        )
 
     if os.path.exists(f'{root_dir}/pages'):
-        shutil.move(f'{root_dir}/pages', f'{FRONTEND_PAGES_DIR}/{plugin_name}')
+        shutil.move(f"{root_dir}/pages", f'{FRONTEND_PAGES_DIR}/{plugin_name}')
     else:
-        logging.warning(f'Pages directory of plugin "{
-                        plugin_name}" does not exist')
+        os.mkdir(f"{FRONTEND_PAGES_DIR}/{plugin_name}")
+        logging.warning(
+            f'Pages directory of plugin "{
+                        plugin_name}" does not exist'
+        )
+
+    if os.path.exists(f'{root_dir}/widgets'):
+        widgets.register(plugin_name, f'{root_dir}/widgets')
+        shutil.move(
+            f'{root_dir}/widgets', f'{FRONTEND_WIDGETS_DIR}/{plugin_name}'
+        )
+    else:
+        logging.warning(
+            f'Widgets directory of plugin "{
+                        plugin_name}" does not exist'
+        )
     return True
 
 

@@ -5,6 +5,7 @@
   import Rebuild from "./Rebuild.svelte";
   import Fullscreen from "./Fullscreen.svelte";
   import Plugins from "./Plugins.svelte";
+  import AddWidget from "./AddWidget.svelte";
 </script>
 
 <div class="container">
@@ -13,6 +14,7 @@
   <Fullscreen />
   <Plugins />
   <Latency />
+  <AddWidget />
   <Clock />
 </div>
 
@@ -33,6 +35,6 @@
     text-align: center;
     display: inline-grid;
     column-gap: 2px;
-    grid-template-columns: 160px 70px 80px 120px 60px auto 100px;
+    grid-template-columns: 160px 70px 80px 120px 60px 100px auto 100px;
   }
 </style>
